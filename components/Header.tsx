@@ -1,0 +1,169 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useTheme } from '@/lib/ThemeContext'
+import { Sun, Moon, Menu, X, ArrowRight } from 'lucide-react'
+
+const NAV_LINKS = [
+  { label: 'Work',     href: '#work' },
+  { label: 'Services', href: '#services' },
+  { label: 'About',    href: '#about' },
+  { label: 'Process',  href: '#process' },
+]
+
+export default function Header() {
+  const { theme, toggle } = useTheme()
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
+  return (
+    <>
+      <header
+        className={`header-blur ${scrolled ? 'scrolled' : ''}`}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}
+      >
+        <div className="container">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
+
+            {/* Logo */}
+            <a
+              href="/"
+              className="font-serif"
+              style={{ fontSize: '19px', letterSpacing: '0.14em', textDecoration: 'none', color: 'var(--text)' }}
+            >
+              FORMA
+            </a>
+
+            {/* Desktop nav */}
+            <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="hidden md:flex" style={{ alignItems: 'center', gap: '4px', marginRight: '8px' }}>
+                {NAV_LINKS.map(link => (
+                  <NavLink key={link.label} href={link.href}>{link.label}</NavLink>
+                ))}
+              </div>
+
+              <button
+                onClick={toggle}
+                className="icon-btn"
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark'
+                  ? <Sun size={14} />
+                  : <Moon size={14} />
+                }
+              </button>
+
+              <a href="#contact" className="btn btn-primary hidden md:inline-flex" style={{ fontSize: '13px', padding: '10px 18px', marginLeft: '8px' }}>
+                Start a Project <ArrowRight size={13} />
+              </a>
+
+              <button
+                onClick={() => setMenuOpen(true)}
+                className="icon-btn md:hidden"
+                style={{ marginLeft: '4px' }}
+                aria-label="Open menu"
+              >
+                <Menu size={16} />
+              </button>
+            </nav>
+
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile menu */}
+      <div className={`mobile-nav ${menuOpen ? 'open' : ''}`}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '48px' }}>
+          <span className="font-serif" style={{ fontSize: '19px', letterSpacing: '0.14em', color: 'var(--text)' }}>
+            FORMA
+          </span>
+          <button onClick={() => setMenuOpen(false)} className="icon-btn" aria-label="Close menu">
+            <X size={16} />
+          </button>
+        </div>
+
+        <nav style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          {NAV_LINKS.map((link, i) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="font-serif"
+              style={{
+                display: 'block',
+                fontSize: '36px',
+                color: 'var(--text)',
+                textDecoration: 'none',
+                padding: '14px 0',
+                borderBottom: '1px solid var(--border)',
+                opacity: 0,
+                animation: menuOpen ? `fadeIn .3s ease ${i * 0.06 + 0.1}s forwards` : 'none',
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        <a
+          href="#contact"
+          onClick={() => setMenuOpen(false)}
+          className="btn btn-primary"
+          style={{ marginTop: '32px', justifyContent: 'center', fontSize: '15px', padding: '15px 24px' }}
+        >
+          Start a Project <ArrowRight size={14} />
+        </a>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: none; }
+        }
+        .hidden { display: none; }
+        @media (min-width: 768px) {
+          .hidden.md\\:flex  { display: flex; }
+          .hidden.md\\:inline-flex { display: inline-flex; }
+          .md\\:hidden { display: none; }
+        }
+      `}</style>
+    </>
+  )
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      style={{
+        fontSize: '14px',
+        color: 'var(--muted)',
+        textDecoration: 'none',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        transition: 'color .2s, background-color .2s',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.color = 'var(--text)'
+        e.currentTarget.style.backgroundColor = 'var(--surface-2)'
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.color = 'var(--muted)'
+        e.currentTarget.style.backgroundColor = 'transparent'
+      }}
+    >
+      {children}
+    </a>
+  )
+}
