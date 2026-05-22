@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, LayoutGroup } from 'framer-motion'
+import { motion, LayoutGroup, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/lib/ThemeContext'
 import { Sun, Moon, Menu, X, ArrowRight } from 'lucide-react'
 
@@ -61,9 +61,9 @@ export default function Header() {
             <a
               href="/"
               className="font-serif"
-              style={{ fontSize: '19px', letterSpacing: '0.14em', textDecoration: 'none', color: 'var(--text)' }}
+              style={{ fontSize: '18px', letterSpacing: '0.08em', textDecoration: 'none', color: 'var(--text)' }}
             >
-              FORMA
+              SAJTPRESS
             </a>
 
             {/* Desktop nav */}
@@ -82,13 +82,28 @@ export default function Header() {
                 </div>
               </LayoutGroup>
 
-              <button
+              <motion.button
                 onClick={toggle}
                 className="icon-btn"
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92, rotate: -20 }}
+                transition={{ type: 'spring', damping: 18, stiffness: 320 }}
                 aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                style={{ overflow: 'hidden' }}
               >
-                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-              </button>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={theme}
+                    initial={{ y: 14, rotate: -90, opacity: 0 }}
+                    animate={{ y: 0, rotate: 0, opacity: 1 }}
+                    exit={{ y: -14, rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ display: 'flex' }}
+                  >
+                    {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
 
               <a
                 href="#contact"
@@ -115,8 +130,8 @@ export default function Header() {
       {/* Mobile menu */}
       <div className={`mobile-nav ${menuOpen ? 'open' : ''}`}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '48px' }}>
-          <span className="font-serif" style={{ fontSize: '19px', letterSpacing: '0.14em', color: 'var(--text)' }}>
-            FORMA
+          <span className="font-serif" style={{ fontSize: '18px', letterSpacing: '0.08em', color: 'var(--text)' }}>
+            SAJTPRESS
           </span>
           <button onClick={() => setMenuOpen(false)} className="icon-btn" aria-label="Close menu">
             <X size={16} />

@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
@@ -105,6 +106,26 @@ function ServiceCard({
 }) {
   const reduced = useReducedMotion()
   const [ref, inView] = useInViewOnce(0.1)
+  const [hovered, setHovered] = useState(false)
+
+  // 3D tilt — mouse-driven perspective transform
+  const tiltX = useMotionValue(0)
+  const tiltY = useMotionValue(0)
+  const rotateX = useSpring(useTransform(tiltY, [-0.5, 0.5], [6, -6]), { damping: 20, stiffness: 220 })
+  const rotateY = useSpring(useTransform(tiltX, [-0.5, 0.5], [-6, 6]), { damping: 20, stiffness: 220 })
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduced) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    tiltX.set((e.clientX - rect.left) / rect.width - 0.5)
+    tiltY.set((e.clientY - rect.top) / rect.height - 0.5)
+  }
+
+  const handleLeave = () => {
+    setHovered(false)
+    tiltX.set(0)
+    tiltY.set(0)
+  }
 
   return (
     <motion.div
@@ -112,19 +133,23 @@ function ServiceCard({
       initial={reduced ? {} : { opacity: 0, y: 20, filter: 'blur(4px)' }}
       animate={inView || reduced ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: index * 0.09 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={handleLeave}
+      onMouseMove={handleMove}
       style={{
-        backgroundColor: 'var(--surface)',
+        backgroundColor: hovered ? 'var(--bg)' : 'var(--surface)',
         padding: '36px 32px',
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
-        transition: 'background-color .25s ease',
         cursor: 'default',
+        transformStyle: 'preserve-3d',
+        perspective: 1200,
+        rotateX: reduced ? 0 : rotateX,
+        rotateY: reduced ? 0 : rotateY,
       }}
-      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg)' }}
-      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--surface)' }}
     >
-      <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500, letterSpacing: '0.06em' }}>
+      <span style={{ fontSize: '12px', color: hovered ? 'var(--accent)' : 'var(--muted)', fontWeight: 500, letterSpacing: '0.06em', transition: 'color .25s' }}>
         {number}
       </span>
 

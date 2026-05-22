@@ -44,9 +44,9 @@ export default function Footer() {
             <a
               href="/"
               className="font-serif"
-              style={{ fontSize: '20px', letterSpacing: '0.14em', textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: '14px' }}
+              style={{ fontSize: '19px', letterSpacing: '0.08em', textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: '14px' }}
             >
-              FORMA
+              SAJTPRESS
             </a>
             <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '240px' }}>
               A boutique web design studio crafting premium digital experiences for ambitious brands.
@@ -131,7 +131,7 @@ export default function Footer() {
           }}
         >
           <p style={{ fontSize: '13px', color: 'var(--muted)' }}>
-            © {year} FORMA Studio. All rights reserved.
+            © {year} SAJTPRESS Studio. All rights reserved.
           </p>
           <div style={{ display: 'flex', gap: '24px' }}>
             {['Privacy Policy', 'Terms of Service'].map(item => (

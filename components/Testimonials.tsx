@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 const TESTIMONIALS = [
   {
     quote:
-      "Working with FORMA was completely different from any agency we'd worked with before. They understood our brand immediately and pushed us in directions we hadn't considered — every one of which was right.",
+      "Working with SAJTPRESS was completely different from any agency we'd worked with before. They understood our brand immediately and pushed us in directions we hadn't considered — every one of which was right.",
     author: 'Sarah Chen',
     role: 'CEO, Portakal Wines',
     initials: 'SC',
@@ -26,7 +26,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "FORMA doesn't just execute a brief — they think with you. Our e-commerce site went from generic to genuinely beautiful, and sales reflect that shift immediately.",
+      "SAJTPRESS doesn't just execute a brief — they think with you. Our e-commerce site went from generic to genuinely beautiful, and sales reflect that shift immediately.",
     author: 'Yuki Tanaka',
     role: 'Creative Director, Hana Studio',
     initials: 'YT',

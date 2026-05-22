@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Mail, CheckCircle } from 'lucide-react'
+import { ArrowRight, Mail, CheckCircle, Copy, Check } from 'lucide-react'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -85,24 +85,7 @@ export default function Contact() {
               </AnimateIn>
 
               <AnimateIn variants={slideRight} delay={0.18}>
-                <a
-                  href="mailto:hello@forma.studio"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    fontSize: '15px',
-                    color: 'var(--accent)',
-                    textDecoration: 'none',
-                    fontWeight: 500,
-                    transition: 'gap .2s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.gap = '14px' }}
-                  onMouseLeave={e => { e.currentTarget.style.gap = '10px' }}
-                >
-                  <Mail size={16} />
-                  hello@forma.studio
-                </a>
+                <EmailCopy email="hello@sajtpress.studio" />
               </AnimateIn>
             </div>
           </div>
@@ -258,6 +241,109 @@ function FormField({
           {error}
         </motion.span>
       )}
+    </div>
+  )
+}
+
+function EmailCopy({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const copy = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {
+      // fallback: still navigate to mailto
+      window.location.href = `mailto:${email}`
+    }
+  }
+
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
+      <a
+        href={`mailto:${email}`}
+        onClick={copy}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '15px',
+          color: 'var(--accent)',
+          textDecoration: 'none',
+          fontWeight: 500,
+          transition: 'gap .2s',
+          cursor: 'pointer',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.gap = '14px' }}
+        onMouseLeave={e => { e.currentTarget.style.gap = '10px' }}
+        aria-label={`Copy email ${email} to clipboard`}
+      >
+        <Mail size={16} />
+        {email}
+      </a>
+
+      <motion.button
+        onClick={copy}
+        aria-label="Copy email"
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.9 }}
+        style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          border: '1px solid var(--border)',
+          backgroundColor: copied ? 'var(--accent)' : 'transparent',
+          color: copied ? '#fff' : 'var(--muted)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          transition: 'background-color .25s, color .25s, border-color .25s',
+          borderColor: copied ? 'var(--accent)' : 'var(--border)',
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {copied ? (
+            <motion.span
+              key="check"
+              initial={{ scale: 0, rotate: -90 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 90 }}
+              transition={{ type: 'spring', damping: 18, stiffness: 280 }}
+              style={{ display: 'flex' }}
+            >
+              <Check size={14} strokeWidth={2.6} />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="copy"
+              initial={{ scale: 0, rotate: 90 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: -90 }}
+              transition={{ type: 'spring', damping: 18, stiffness: 280 }}
+              style={{ display: 'flex' }}
+            >
+              <Copy size={13} />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
+
+      <AnimatePresence>
+        {copied && (
+          <motion.span
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            transition={{ duration: 0.2 }}
+            style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 500 }}
+          >
+            Copied!
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

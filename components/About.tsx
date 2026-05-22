@@ -29,7 +29,7 @@ export default function About() {
           {/* Left — text */}
           <div>
             <AnimateIn variants={fadeUp}>
-              <p className="text-label" style={{ marginBottom: '20px' }}>About Forma</p>
+              <p className="text-label" style={{ marginBottom: '20px' }}>About Sajtpress</p>
             </AnimateIn>
 
             <AnimateIn variants={fadeUp} delay={0.08}>
@@ -200,7 +200,7 @@ function AboutVisual() {
           />
           <div>
             <p style={{ fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>Nikola Ristić</p>
-            <p style={{ fontSize: '12px', opacity: 0.65 }}>Creative Director, FORMA</p>
+            <p style={{ fontSize: '12px', opacity: 0.65 }}>Creative Director, SAJTPRESS</p>
           </div>
         </div>
       </motion.div>

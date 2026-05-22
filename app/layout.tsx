@@ -19,11 +19,11 @@ const sans = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'FORMA — Web Design Studio',
+  title: 'SAJTPRESS — Web Design Studio',
   description:
     'A boutique web design studio crafting premium digital experiences for ambitious brands. Web design, development, and brand identity.',
   openGraph: {
-    title: 'FORMA — Web Design Studio',
+    title: 'SAJTPRESS — Web Design Studio',
     description: 'Premium digital experiences for ambitious brands.',
     type: 'website',
   },
