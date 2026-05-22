@@ -1,17 +1,19 @@
 'use client'
 
-import { useInView } from '@/hooks/useInView'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { AnimateIn } from '@/components/AnimateIn'
+import { fadeUp, slideRight, scaleIn } from '@/lib/motion'
+import { useCountUp } from '@/hooks/useCountUp'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const STATS = [
-  { value: '2014', label: 'Year founded' },
-  { value: '8',    label: 'Team members' },
-  { value: '14',   label: 'Industry awards' },
+  { display: '2014', value: null,  label: 'Year founded'     },
+  { display: null,   value: 8,     label: 'Team members'     },
+  { display: null,   value: 14,    label: 'Industry awards'  },
 ]
 
 export default function About() {
-  const leftRef  = useInView<HTMLDivElement>()
-  const rightRef = useInView<HTMLDivElement>()
-
   return (
     <section id="about" className="section" style={{ backgroundColor: 'var(--surface)' }}>
       <div className="container">
@@ -24,75 +26,125 @@ export default function About() {
           }}
         >
           {/* Left — text */}
-          <div ref={leftRef} className="reveal">
-            <p className="text-label" style={{ marginBottom: '20px' }}>About Forma</p>
+          <div>
+            <AnimateIn variants={fadeUp}>
+              <p className="text-label" style={{ marginBottom: '20px' }}>About Forma</p>
+            </AnimateIn>
 
-            <h2
-              className="text-heading"
-              style={{ marginBottom: '28px' }}
-            >
-              Small studio.
-              <br />
-              <em className="font-serif" style={{ fontStyle: 'italic' }}>Big ambition.</em>
-            </h2>
+            <AnimateIn variants={fadeUp} delay={0.08}>
+              <h2 className="text-heading" style={{ marginBottom: '28px' }}>
+                Small studio.
+                <br />
+                <em className="font-serif" style={{ fontStyle: 'italic' }}>Big ambition.</em>
+              </h2>
+            </AnimateIn>
 
-            <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '20px' }}>
-              We're a focused team of designers and developers who believe that
-              great digital work comes from genuine collaboration, clear thinking,
-              and an obsessive attention to craft.
-            </p>
+            <AnimateIn variants={fadeUp} delay={0.16}>
+              <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '20px' }}>
+                We're a focused team of designers and developers who believe that
+                great digital work comes from genuine collaboration, clear thinking,
+                and an obsessive attention to craft.
+              </p>
+            </AnimateIn>
 
-            <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '44px' }}>
-              We don't take on dozens of projects at once. We stay selective
-              so every client gets our full attention — from the first call
-              to the day we hit launch, and beyond.
-            </p>
+            <AnimateIn variants={fadeUp} delay={0.22}>
+              <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '44px' }}>
+                We don't take on dozens of projects at once. We stay selective
+                so every client gets our full attention — from the first call
+                to the day we hit launch, and beyond.
+              </p>
+            </AnimateIn>
 
-            <div
-              style={{
-                display: 'flex',
-                gap: '32px',
-                paddingTop: '32px',
-                borderTop: '1px solid var(--border)',
-              }}
-            >
-              {STATS.map(stat => (
-                <div key={stat.label}>
-                  <div
-                    className="font-serif"
-                    style={{ fontSize: '32px', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: '6px' }}
-                  >
-                    {stat.value}
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{stat.label}</div>
-                </div>
-              ))}
-            </div>
+            {/* Stats with count-up */}
+            <AnimateIn variants={fadeUp} delay={0.28}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '32px',
+                  paddingTop: '32px',
+                  borderTop: '1px solid var(--border)',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {STATS.map((stat, i) => (
+                  <StatItem key={stat.label} {...stat} index={i} />
+                ))}
+              </div>
+            </AnimateIn>
           </div>
 
-          {/* Right — visual */}
-          <div ref={rightRef} className="reveal reveal-d2">
+          {/* Right — visual, springs in from the right */}
+          <AnimateIn variants={scaleIn} delay={0.18}>
             <AboutVisual />
-          </div>
-
+          </AnimateIn>
         </div>
       </div>
     </section>
   )
 }
 
+function StatItem({
+  display,
+  value,
+  label,
+  index,
+}: {
+  display: string | null
+  value: number | null
+  label: string
+  index: number
+}) {
+  const [triggered, setTriggered] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const reduced = useReducedMotion()
+  const count = useCountUp(value ?? 0, 1600, triggered && !reduced && value !== null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setTriggered(true); obs.disconnect() } },
+      { threshold: 0.3 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  const shownValue = display !== null
+    ? display
+    : (value !== null ? (reduced ? value : count) : '')
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
+    >
+      <div
+        className="font-serif"
+        style={{ fontSize: '32px', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: '6px' }}
+      >
+        {shownValue}
+      </div>
+      <div style={{ fontSize: '13px', color: 'var(--muted)' }}>{label}</div>
+    </motion.div>
+  )
+}
+
 function AboutVisual() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
       {/* Top card */}
-      <div
+      <motion.div
         className="card"
-        style={{
-          padding: '28px 32px',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '20px',
-        }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+        style={{ padding: '28px 32px', display: 'flex', alignItems: 'flex-start', gap: '20px' }}
       >
         <div
           style={{
@@ -112,10 +164,16 @@ function AboutVisual() {
             We limit our active projects to ensure each one receives the depth it deserves.
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Middle card — highlighted */}
-      <div
+      {/* Middle card — teal highlight, floats gently */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        animate={{ y: [0, -6, 0] }}
+        // @ts-ignore — framer-motion allows animate + whileInView together
         style={{
           backgroundColor: 'var(--accent)',
           borderRadius: 'var(--r)',
@@ -143,11 +201,15 @@ function AboutVisual() {
             <p style={{ fontSize: '12px', opacity: 0.65 }}>Creative Director, FORMA</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Bottom card */}
-      <div
+      <motion.div
         className="card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
         style={{
           padding: '24px 32px',
           display: 'flex',
@@ -164,7 +226,8 @@ function AboutVisual() {
           <p>Remote-first</p>
           <p>Global clients</p>
         </div>
-      </div>
+      </motion.div>
+
     </div>
   )
 }

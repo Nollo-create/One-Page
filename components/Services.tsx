@@ -1,6 +1,9 @@
 'use client'
 
-import { useInView } from '@/hooks/useInView'
+import { motion } from 'framer-motion'
+import { AnimateIn } from '@/components/AnimateIn'
+import { fadeUp, slideRight } from '@/lib/motion'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const SERVICES = [
   {
@@ -33,8 +36,18 @@ const SERVICES = [
   },
 ]
 
+const cardVariants = {
+  hidden:  { opacity: 0, y: 28, filter: 'blur(5px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
+  },
+}
+
 export default function Services() {
-  const sectionRef = useInView<HTMLDivElement>()
+  const reduced = useReducedMotion()
 
   return (
     <section id="services" className="section" style={{ backgroundColor: 'var(--surface)' }}>
@@ -42,8 +55,6 @@ export default function Services() {
 
         {/* Header */}
         <div
-          ref={sectionRef}
-          className="reveal"
           style={{
             display: 'flex',
             alignItems: 'flex-end',
@@ -53,21 +64,31 @@ export default function Services() {
             gap: '20px',
           }}
         >
-          <div>
+          <AnimateIn variants={fadeUp}>
             <p className="text-label" style={{ marginBottom: '16px' }}>What We Do</p>
             <h2 className="text-heading">
               Full-spectrum
               <br />
               <em className="font-serif" style={{ fontStyle: 'italic' }}>digital craft</em>
             </h2>
-          </div>
-          <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '320px', lineHeight: 1.7 }}>
-            From concept to launch, we handle every layer of the digital experience — thoughtfully, intentionally.
-          </p>
+          </AnimateIn>
+
+          <AnimateIn variants={slideRight} delay={0.18}>
+            <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '320px', lineHeight: 1.7 }}>
+              From concept to launch, we handle every layer of the digital experience — thoughtfully, intentionally.
+            </p>
+          </AnimateIn>
         </div>
 
-        {/* Services grid */}
-        <div
+        {/* Services grid — stagger cascade */}
+        <motion.div
+          variants={reduced ? {} : {
+            hidden:  {},
+            visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } },
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -77,10 +98,10 @@ export default function Services() {
             overflow: 'hidden',
           }}
         >
-          {SERVICES.map((service, i) => (
-            <ServiceCard key={service.number} {...service} delay={i} />
+          {SERVICES.map(service => (
+            <ServiceCard key={service.number} {...service} />
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>
@@ -92,20 +113,17 @@ function ServiceCard({
   title,
   description,
   tags,
-  delay,
 }: {
   number: string
   title: string
   description: string
   tags: string[]
-  delay: number
 }) {
-  const ref = useInView<HTMLDivElement>()
+  const reduced = useReducedMotion()
 
   return (
-    <div
-      ref={ref}
-      className={`reveal reveal-d${delay + 1}`}
+    <motion.div
+      variants={reduced ? {} : cardVariants}
       style={{
         backgroundColor: 'var(--surface)',
         padding: '36px 32px',
@@ -115,21 +133,14 @@ function ServiceCard({
         transition: 'background-color .25s ease',
         cursor: 'default',
       }}
-      onMouseEnter={e => {
-        e.currentTarget.style.backgroundColor = 'var(--bg)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.backgroundColor = 'var(--surface)'
-      }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg)' }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'var(--surface)' }}
     >
       <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500, letterSpacing: '0.06em' }}>
         {number}
       </span>
 
-      <h3
-        className="font-serif"
-        style={{ fontSize: '22px', letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text)' }}
-      >
+      <h3 className="font-serif" style={{ fontSize: '22px', letterSpacing: '-0.01em', lineHeight: 1.2, color: 'var(--text)' }}>
         {title}
       </h3>
 
@@ -142,6 +153,6 @@ function ServiceCard({
           <span key={tag} className="tag">{tag}</span>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -1,31 +1,52 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion, LayoutGroup } from 'framer-motion'
 import { useTheme } from '@/lib/ThemeContext'
 import { Sun, Moon, Menu, X, ArrowRight } from 'lucide-react'
 
 const NAV_LINKS = [
-  { label: 'Work',     href: '#work' },
+  { label: 'Work',     href: '#work'     },
   { label: 'Services', href: '#services' },
-  { label: 'About',    href: '#about' },
-  { label: 'Process',  href: '#process' },
+  { label: 'About',    href: '#about'    },
+  { label: 'Process',  href: '#process'  },
 ]
 
 export default function Header() {
-  const { theme, toggle } = useTheme()
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const { theme, toggle }                     = useTheme()
+  const [scrolled, setScrolled]               = useState(false)
+  const [menuOpen, setMenuOpen]               = useState(false)
+  const [activeSection, setActiveSection]     = useState('')
 
+  // Scroll detection
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Lock body scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
+
+  // Active section indicator via IntersectionObserver
+  useEffect(() => {
+    const ids = NAV_LINKS.map(l => l.href.slice(1))
+    const observers = ids.map(id => {
+      const el = document.getElementById(id)
+      if (!el) return null
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
+        // thin horizontal band centred in the viewport
+        { rootMargin: '-40% 0px -50% 0px', threshold: 0 }
+      )
+      obs.observe(el)
+      return obs
+    })
+    return () => observers.forEach(obs => obs?.disconnect())
+  }, [])
 
   return (
     <>
@@ -47,24 +68,33 @@ export default function Header() {
 
             {/* Desktop nav */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div className="hidden md:flex" style={{ alignItems: 'center', gap: '4px', marginRight: '8px' }}>
-                {NAV_LINKS.map(link => (
-                  <NavLink key={link.label} href={link.href}>{link.label}</NavLink>
-                ))}
-              </div>
+              <LayoutGroup id="header-nav">
+                <div className="hidden md:flex" style={{ alignItems: 'center', gap: '4px', marginRight: '8px' }}>
+                  {NAV_LINKS.map(link => (
+                    <NavLink
+                      key={link.label}
+                      href={link.href}
+                      isActive={activeSection === link.href.slice(1)}
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </LayoutGroup>
 
               <button
                 onClick={toggle}
                 className="icon-btn"
                 aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                {theme === 'dark'
-                  ? <Sun size={14} />
-                  : <Moon size={14} />
-                }
+                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
               </button>
 
-              <a href="#contact" className="btn btn-primary hidden md:inline-flex" style={{ fontSize: '13px', padding: '10px 18px', marginLeft: '8px' }}>
+              <a
+                href="#contact"
+                className="btn btn-primary hidden md:inline-flex"
+                style={{ fontSize: '13px', padding: '10px 18px', marginLeft: '8px' }}
+              >
                 Start a Project <ArrowRight size={13} />
               </a>
 
@@ -133,37 +163,65 @@ export default function Header() {
         }
         .hidden { display: none; }
         @media (min-width: 768px) {
-          .hidden.md\\:flex  { display: flex; }
-          .hidden.md\\:inline-flex { display: inline-flex; }
-          .md\\:hidden { display: none; }
+          .hidden.md\\:flex         { display: flex; }
+          .hidden.md\\:inline-flex  { display: inline-flex; }
+          .md\\:hidden              { display: none; }
         }
       `}</style>
     </>
   )
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({
+  href,
+  children,
+  isActive,
+}: {
+  href: string
+  children: React.ReactNode
+  isActive: boolean
+}) {
   return (
     <a
       href={href}
       style={{
+        position: 'relative',
+        display: 'inline-block',
         fontSize: '14px',
-        color: 'var(--muted)',
+        color: isActive ? 'var(--text)' : 'var(--muted)',
         textDecoration: 'none',
         padding: '6px 12px',
         borderRadius: '6px',
         transition: 'color .2s, background-color .2s',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.color = 'var(--text)'
+        e.currentTarget.style.color           = 'var(--text)'
         e.currentTarget.style.backgroundColor = 'var(--surface-2)'
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.color = 'var(--muted)'
+        e.currentTarget.style.color           = isActive ? 'var(--text)' : 'var(--muted)'
         e.currentTarget.style.backgroundColor = 'transparent'
       }}
     >
       {children}
+
+      {/* Sliding underline indicator */}
+      {isActive && (
+        <motion.span
+          layoutId="nav-indicator"
+          style={{
+            position: 'absolute',
+            bottom: '2px',
+            left: '12px',
+            right: '12px',
+            height: '1.5px',
+            backgroundColor: 'var(--accent)',
+            borderRadius: '1px',
+            display: 'block',
+          }}
+          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        />
+      )}
     </a>
   )
 }

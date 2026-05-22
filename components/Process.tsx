@@ -1,6 +1,10 @@
 'use client'
 
-import { useInView } from '@/hooks/useInView'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { AnimateIn } from '@/components/AnimateIn'
+import { fadeUp, slideRight } from '@/lib/motion'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const STEPS = [
   {
@@ -35,24 +39,31 @@ const STEPS = [
     number: '05',
     title: 'Launch & Grow',
     description:
-      "We don’t just deliver and disappear. We support your launch, monitor performance, and remain a strategic partner as your business evolves.",
+      "We don't just deliver and disappear. We support your launch, monitor performance, and remain a strategic partner as your business evolves.",
     duration: 'Ongoing',
   },
 ]
 
 export default function Process() {
-  const headerRef = useInView<HTMLDivElement>()
+  const reduced = useReducedMotion()
+  const stepsRef = useRef<HTMLDivElement>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: stepsRef,
+    offset: ['start 75%', 'end 25%'],
+  })
+
+  const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
   return (
     <section id="process" className="section" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="container">
 
-        <div
-          ref={headerRef}
-          className="reveal"
-          style={{ marginBottom: '64px' }}
-        >
-          <p className="text-label" style={{ marginBottom: '16px' }}>How We Work</p>
+        {/* Header */}
+        <div style={{ marginBottom: '64px' }}>
+          <AnimateIn variants={fadeUp}>
+            <p className="text-label" style={{ marginBottom: '16px' }}>How We Work</p>
+          </AnimateIn>
           <div
             style={{
               display: 'flex',
@@ -62,22 +73,63 @@ export default function Process() {
               gap: '20px',
             }}
           >
-            <h2 className="text-heading">
-              A process built
-              <br />
-              <em className="font-serif" style={{ fontStyle: 'italic' }}>for results</em>
-            </h2>
-            <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '340px', lineHeight: 1.7 }}>
-              Transparent, collaborative, and predictable. You'll always know where we are and what comes next.
-            </p>
+            <AnimateIn variants={fadeUp} delay={0.1}>
+              <h2 className="text-heading">
+                A process built
+                <br />
+                <em className="font-serif" style={{ fontStyle: 'italic' }}>for results</em>
+              </h2>
+            </AnimateIn>
+            <AnimateIn variants={slideRight} delay={0.2}>
+              <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '340px', lineHeight: 1.7 }}>
+                Transparent, collaborative, and predictable. You'll always know where we are and what comes next.
+              </p>
+            </AnimateIn>
           </div>
         </div>
 
-        {/* Steps */}
-        <div>
-          {STEPS.map((step, i) => (
-            <ProcessStep key={step.number} {...step} index={i} />
-          ))}
+        {/* Steps — with scroll-driven progress line */}
+        <div style={{ position: 'relative' }}>
+
+          {/* Background track */}
+          {!reduced && (
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: '31px',
+                top: 0,
+                bottom: 0,
+                width: '1px',
+                backgroundColor: 'var(--border)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+
+          {/* Animated accent fill */}
+          {!reduced && (
+            <motion.div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: '30.5px',
+                top: 0,
+                width: '2px',
+                height: lineHeight,
+                backgroundColor: 'var(--accent)',
+                originY: 0,
+                pointerEvents: 'none',
+                borderRadius: '1px',
+              }}
+            />
+          )}
+
+          <div ref={stepsRef}>
+            {STEPS.map((step, i) => (
+              <ProcessStep key={step.number} {...step} index={i} />
+            ))}
+          </div>
         </div>
 
       </div>
@@ -98,12 +150,14 @@ function ProcessStep({
   duration: string
   index: number
 }) {
-  const ref = useInView<HTMLDivElement>()
+  const reduced = useReducedMotion()
 
   return (
-    <div
-      ref={ref}
-      className={`reveal reveal-d${(index % 3) + 1}`}
+    <motion.div
+      initial={reduced ? {} : { opacity: 0, x: -20 }}
+      whileInView={reduced ? {} : { opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: index * 0.07 }}
       style={{ borderTop: '1px solid var(--border)' }}
     >
       <div
@@ -115,10 +169,15 @@ function ProcessStep({
           alignItems: 'start',
         }}
       >
-        {/* Number */}
+        {/* Step number */}
         <span
           className="font-serif"
-          style={{ fontSize: '13px', color: 'var(--muted)', paddingTop: '4px', letterSpacing: '0.04em' }}
+          style={{
+            fontSize: '13px',
+            color: 'var(--muted)',
+            paddingTop: '4px',
+            letterSpacing: '0.04em',
+          }}
         >
           {number}
         </span>
@@ -139,6 +198,6 @@ function ProcessStep({
         {/* Duration */}
         <span className="tag" style={{ marginTop: '4px', flexShrink: 0 }}>{duration}</span>
       </div>
-    </div>
+    </motion.div>
   )
 }
