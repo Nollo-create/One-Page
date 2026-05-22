@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight, scaleIn } from '@/lib/motion'
 import { useCountUp } from '@/hooks/useCountUp'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const STATS = [
@@ -55,7 +56,7 @@ export default function About() {
               </p>
             </AnimateIn>
 
-            {/* Stats with count-up */}
+            {/* Stats row */}
             <AnimateIn variants={fadeUp} delay={0.28}>
               <div
                 style={{
@@ -73,7 +74,7 @@ export default function About() {
             </AnimateIn>
           </div>
 
-          {/* Right — visual, springs in from the right */}
+          {/* Right — visual cards */}
           <AnimateIn variants={scaleIn} delay={0.18}>
             <AboutVisual />
           </AnimateIn>
@@ -118,8 +119,7 @@ function StatItem({
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
+      animate={triggered ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
     >
       <div
@@ -134,15 +134,19 @@ function StatItem({
 }
 
 function AboutVisual() {
+  const [ref0, inView0] = useInViewOnce(0.15)
+  const [ref1, inView1] = useInViewOnce(0.15)
+  const [ref2, inView2] = useInViewOnce(0.15)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
       {/* Top card */}
       <motion.div
+        ref={ref0 as React.RefObject<HTMLDivElement>}
         className="card"
         initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        animate={inView0 ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
         style={{ padding: '28px 32px', display: 'flex', alignItems: 'flex-start', gap: '20px' }}
       >
@@ -166,14 +170,12 @@ function AboutVisual() {
         </div>
       </motion.div>
 
-      {/* Middle card — teal highlight, floats gently */}
+      {/* Middle card — teal highlight */}
       <motion.div
+        ref={ref1 as React.RefObject<HTMLDivElement>}
         initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        animate={inView1 ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        animate={{ y: [0, -6, 0] }}
-        // @ts-ignore — framer-motion allows animate + whileInView together
         style={{
           backgroundColor: 'var(--accent)',
           borderRadius: 'var(--r)',
@@ -205,10 +207,10 @@ function AboutVisual() {
 
       {/* Bottom card */}
       <motion.div
+        ref={ref2 as React.RefObject<HTMLDivElement>}
         className="card"
         initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        animate={inView2 ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
         style={{
           padding: '24px 32px',

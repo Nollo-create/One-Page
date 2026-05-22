@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const STEPS = [
@@ -88,7 +89,7 @@ export default function Process() {
           </div>
         </div>
 
-        {/* Steps — with scroll-driven progress line */}
+        {/* Steps — scroll-driven progress line */}
         <div style={{ position: 'relative' }}>
 
           {/* Background track */}
@@ -151,12 +152,13 @@ function ProcessStep({
   index: number
 }) {
   const reduced = useReducedMotion()
+  const [ref, inView] = useInViewOnce(0.2)
 
   return (
     <motion.div
+      ref={ref as React.RefObject<HTMLDivElement>}
       initial={reduced ? {} : { opacity: 0, x: -20 }}
-      whileInView={reduced ? {} : { opacity: 1, x: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
+      animate={inView || reduced ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: index * 0.07 }}
       style={{ borderTop: '1px solid var(--border)' }}
     >
@@ -169,20 +171,13 @@ function ProcessStep({
           alignItems: 'start',
         }}
       >
-        {/* Step number */}
         <span
           className="font-serif"
-          style={{
-            fontSize: '13px',
-            color: 'var(--muted)',
-            paddingTop: '4px',
-            letterSpacing: '0.04em',
-          }}
+          style={{ fontSize: '13px', color: 'var(--muted)', paddingTop: '4px', letterSpacing: '0.04em' }}
         >
           {number}
         </span>
 
-        {/* Content */}
         <div>
           <h3
             className="font-serif"
@@ -195,7 +190,6 @@ function ProcessStep({
           </p>
         </div>
 
-        {/* Duration */}
         <span className="tag" style={{ marginTop: '4px', flexShrink: 0 }}>{duration}</span>
       </div>
     </motion.div>

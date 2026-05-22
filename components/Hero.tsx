@@ -32,6 +32,16 @@ export default function Hero() {
   const springX = useSpring(rawX, { damping: 40, stiffness: 150 })
   const springY = useSpring(rawY, { damping: 40, stiffness: 150 })
 
+  // Pre-compute chip transforms at top level (Rules of Hooks — no hooks in loops)
+  const chip0X = useTransform(springX, v => v * 1)
+  const chip0Y = useTransform(springY, v => v * 0.8)
+  const chip1X = useTransform(springX, v => v * -0.7)
+  const chip1Y = useTransform(springY, v => v * -1)
+  const chip2X = useTransform(springX, v => v * 1)
+  const chip2Y = useTransform(springY, v => v * 0.8)
+  const chipX = [chip0X, chip1X, chip2X]
+  const chipY = [chip0Y, chip1Y, chip2Y]
+
   useEffect(() => {
     const t = setTimeout(() => setStarted(true), 80)
     return () => clearTimeout(t)
@@ -206,8 +216,8 @@ export default function Hero() {
             position: 'absolute',
             left: chip.x,
             top: chip.y,
-            x: useTransform(springX, v => v * (i % 2 === 0 ? 1 : -0.7)),
-            y: useTransform(springY, v => v * (i % 2 === 0 ? 0.8 : -1)),
+            x: chipX[i],
+            y: chipY[i],
             rotate: chip.rotate,
             display: 'none',
           }}

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp } from '@/lib/motion'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const PROJECTS = [
@@ -117,6 +118,7 @@ function ProjectCard({
   const [hovered, setHovered] = useState(false)
   const [mouse,   setMouse]   = useState({ x: 0, y: 0 })
   const reduced = useReducedMotion()
+  const [cardRef, inView] = useInViewOnce(0.08)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -128,9 +130,9 @@ function ProjectCard({
 
   return (
     <motion.div
+      ref={cardRef as React.RefObject<HTMLDivElement>}
       initial={reduced ? {} : { opacity: 0, y: 40, filter: 'blur(6px)' }}
-      whileInView={reduced ? {} : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, amount: 0.1 }}
+      animate={inView || reduced ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
       transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
       style={{ borderRadius: 'var(--r)', overflow: 'hidden' }}
       onMouseEnter={() => setHovered(true)}

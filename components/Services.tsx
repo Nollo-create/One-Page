@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const SERVICES = [
@@ -36,19 +37,7 @@ const SERVICES = [
   },
 ]
 
-const cardVariants = {
-  hidden:  { opacity: 0, y: 28, filter: 'blur(5px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
-  },
-}
-
 export default function Services() {
-  const reduced = useReducedMotion()
-
   return (
     <section id="services" className="section" style={{ backgroundColor: 'var(--surface)' }}>
       <div className="container">
@@ -80,15 +69,8 @@ export default function Services() {
           </AnimateIn>
         </div>
 
-        {/* Services grid — stagger cascade */}
-        <motion.div
-          variants={reduced ? {} : {
-            hidden:  {},
-            visible: { transition: { staggerChildren: 0.11, delayChildren: 0.08 } },
-          }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
+        {/* Services grid — each card self-observes */}
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -98,10 +80,10 @@ export default function Services() {
             overflow: 'hidden',
           }}
         >
-          {SERVICES.map(service => (
-            <ServiceCard key={service.number} {...service} />
+          {SERVICES.map((service, i) => (
+            <ServiceCard key={service.number} {...service} index={i} />
           ))}
-        </motion.div>
+        </div>
 
       </div>
     </section>
@@ -113,17 +95,23 @@ function ServiceCard({
   title,
   description,
   tags,
+  index,
 }: {
   number: string
   title: string
   description: string
   tags: string[]
+  index: number
 }) {
   const reduced = useReducedMotion()
+  const [ref, inView] = useInViewOnce(0.1)
 
   return (
     <motion.div
-      variants={reduced ? {} : cardVariants}
+      ref={ref as React.RefObject<HTMLDivElement>}
+      initial={reduced ? {} : { opacity: 0, y: 20, filter: 'blur(4px)' }}
+      animate={inView || reduced ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: index * 0.09 }}
       style={{
         backgroundColor: 'var(--surface)',
         padding: '36px 32px',
