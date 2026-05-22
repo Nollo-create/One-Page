@@ -40,7 +40,7 @@ export default function RootLayout({
       className={`${serif.variable} ${sans.variable}`}
       suppressHydrationWarning
     >
-      <body>
+      <body suppressHydrationWarning>
         <Script
           id="theme-init"
           strategy="beforeInteractive"
