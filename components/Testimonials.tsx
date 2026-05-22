@@ -149,10 +149,10 @@ export default function Testimonials() {
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
-              initial={reduced ? {} : { opacity: 0, y: 24, filter: 'blur(6px)' }}
-              animate={reduced ? {} : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={reduced   ? {} : { opacity: 0, y: -16, filter: 'blur(4px)' }}
-              transition={{ duration: 0.52, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: reduced ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}
             >
               {/* Large quote mark */}
