@@ -114,12 +114,13 @@ function ProcessStep({
   index: number
 }) {
   const reduced = useReducedMotion()
+  const [ref, inView] = useInViewOnce(0.2)
 
   return (
     <motion.div
+      ref={ref as React.RefObject<HTMLDivElement>}
       initial={reduced ? {} : { opacity: 0, x: -20 }}
-      whileInView={reduced ? {} : { opacity: 1, x: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
+      animate={inView || reduced ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: index * 0.07 }}
       style={{ borderTop: '1px solid var(--border)' }}
     >
