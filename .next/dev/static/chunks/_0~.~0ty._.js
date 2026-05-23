@@ -857,15 +857,10 @@ function useReducedMotion() {
     const [reduced, setReduced] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "useReducedMotion.useEffect": ()=>{
-            const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-            setReduced(mq.matches);
-            const handler = {
-                "useReducedMotion.useEffect.handler": (e)=>setReduced(e.matches)
-            }["useReducedMotion.useEffect.handler"];
-            mq.addEventListener('change', handler);
-            return ({
-                "useReducedMotion.useEffect": ()=>mq.removeEventListener('change', handler)
-            })["useReducedMotion.useEffect"];
+            try {
+                if (localStorage.getItem('forceReducedMotion') === '1') setReduced(true);
+            } catch  {
+            /* SSR / blocked storage */ }
         }
     }["useReducedMotion.useEffect"], []);
     return reduced;
@@ -1074,7 +1069,7 @@ const CARDS = [
         kind: 'browser',
         delay: 1.2,
         x: '60%',
-        y: '15%',
+        y: '12%',
         rotate: -2,
         parallax: 1
     },
@@ -1082,7 +1077,7 @@ const CARDS = [
         kind: 'palette',
         delay: 1.5,
         x: '68%',
-        y: '46%',
+        y: '40%',
         rotate: 1.5,
         parallax: -0.7
     },
@@ -1090,7 +1085,7 @@ const CARDS = [
         kind: 'type',
         delay: 1.8,
         x: '58%',
-        y: '74%',
+        y: '64%',
         rotate: -1,
         parallax: 0.9
     }

@@ -715,6 +715,7 @@
   --bg: #f7f6f2;
   --surface: #f9f8f5;
   --surface-2: #edeae5;
+  --surface-rgb: 249, 248, 245;
   --text: #28251d;
   --muted: #7a7974;
   --accent: #01696f;
@@ -732,6 +733,7 @@
   --bg: #171614;
   --surface: #1c1b19;
   --surface-2: #242220;
+  --surface-rgb: 28, 27, 25;
   --text: #cdccca;
   --muted: #7a7974;
   --accent: #4f98a3;
