@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { AnimateIn } from '@/components/AnimateIn'
@@ -149,13 +150,19 @@ function ProjectCard({
             willChange: 'transform',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={project.image}
             alt={`${project.name} — ${meta.tagline}`}
+            width={large ? 800 : 500}
+            height={large ? 800 : 500}
+            priority={large}
+            loading={large ? 'eager' : 'lazy'}
+            sizes={large ? '(max-width: 768px) 100vw, 800px' : '(max-width: 768px) 50vw, 320px'}
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
+              width: 'auto',
+              height: 'auto',
               objectFit: 'contain',
               display: 'block',
               userSelect: 'none',

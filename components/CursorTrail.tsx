@@ -33,6 +33,8 @@ export default function CursorTrail({
 
     // Respect reduced motion
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // Skip on touch/coarse-pointer devices — no cursor to follow, just wasted CPU
+    if (window.matchMedia('(pointer: coarse)').matches) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -52,6 +54,19 @@ export default function CursorTrail({
     const ro = new ResizeObserver(resize)
     ro.observe(parent)
 
+    // Pre-parse colour once instead of on every particle
+    const m = color.match(/rgba?\(([^)]+)\)/)
+    const [cr, cg, cb] = m ? m[1].split(',').map(s => s.trim()) : ['1', '105', '111']
+    const baseFill = `${cr}, ${cg}, ${cb}`
+
+    let lastClearedWasEmpty = false
+
+    const ensureRaf = () => {
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(render)
+      }
+    }
+
     const onMove = (e: MouseEvent) => {
       const rect = parent.getBoundingClientRect()
       const x = e.clientX - rect.left
@@ -62,7 +77,6 @@ export default function CursorTrail({
       if (now - lastSpawnRef.current < 16) return
       lastSpawnRef.current = now
 
-      // Spawn 1-2 particles per mouse move tick
       const list = particlesRef.current
       const count = Math.random() < 0.6 ? 1 : 2
       for (let i = 0; i < count; i++) {
@@ -75,15 +89,29 @@ export default function CursorTrail({
           size: 1.5 + Math.random() * 2.5,
         })
       }
-
-      // Cap total particles
       if (list.length > maxParticles) list.splice(0, list.length - maxParticles)
+
+      // Restart the render loop if it was paused
+      ensureRaf()
     }
 
-    parent.addEventListener('mousemove', onMove)
+    parent.addEventListener('mousemove', onMove, { passive: true })
 
     const render = () => {
       const list = particlesRef.current
+
+      if (list.length === 0) {
+        // Pause the loop — nothing to draw. onMove will restart us.
+        if (!lastClearedWasEmpty) {
+          const w = canvas.width / dpr, h = canvas.height / dpr
+          ctx.clearRect(0, 0, w, h)
+          lastClearedWasEmpty = true
+        }
+        rafRef.current = null
+        return
+      }
+
+      lastClearedWasEmpty = false
       const w = canvas.width  / dpr
       const h = canvas.height / dpr
       ctx.clearRect(0, 0, w, h)
@@ -92,7 +120,7 @@ export default function CursorTrail({
         const p = list[i]
         p.x += p.vx
         p.y += p.vy
-        p.vy -= 0.005        // slight upward drift
+        p.vy -= 0.005
         p.life -= 0.018
 
         if (p.life <= 0) {
@@ -100,11 +128,7 @@ export default function CursorTrail({
           continue
         }
 
-        const alpha = p.life * 0.7
-        // Parse the colour and override alpha
-        const m = color.match(/rgba?\(([^)]+)\)/)
-        const channels = m ? m[1].split(',').map(s => s.trim()) : ['1', '105', '111']
-        ctx.fillStyle = `rgba(${channels[0]}, ${channels[1]}, ${channels[2]}, ${alpha})`
+        ctx.fillStyle = `rgba(${baseFill}, ${p.life * 0.7})`
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
         ctx.fill()
@@ -112,7 +136,6 @@ export default function CursorTrail({
 
       rafRef.current = requestAnimationFrame(render)
     }
-    rafRef.current = requestAnimationFrame(render)
 
     return () => {
       parent.removeEventListener('mousemove', onMove)
