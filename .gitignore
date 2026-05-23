@@ -13,8 +13,8 @@
 # testing
 /coverage
 
-# next.js
-/.next/
+# next.js — keep /.next committed so cPanel doesn't have to build (LVE memory limit)
+# /.next/
 /out/
 
 # production
