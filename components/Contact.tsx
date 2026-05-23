@@ -207,7 +207,12 @@ function FormField({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    // suppressHydrationWarning: password managers (LastPass, 1Password, Bitwarden)
+    // inject icon overlays as the first child of input wrappers before React hydrates.
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+      suppressHydrationWarning
+    >
       <label htmlFor={id} style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text)' }}>
         {label}
       </label>
@@ -221,6 +226,7 @@ function FormField({
           style={inputStyle}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)' }}
           onBlur={e  => { e.currentTarget.style.borderColor = error ? '#E05A5A' : 'var(--border)' }}
+          suppressHydrationWarning
         />
       ) : (
         <input
@@ -232,6 +238,7 @@ function FormField({
           style={inputStyle}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)' }}
           onBlur={e  => { e.currentTarget.style.borderColor = error ? '#E05A5A' : 'var(--border)' }}
+          suppressHydrationWarning
         />
       )}
       {error && (
