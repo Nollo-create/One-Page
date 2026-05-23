@@ -11,9 +11,9 @@ import CursorTrail from '@/components/CursorTrail'
 
 // Three interactive design-tool cards, positioned in the right half of the hero.
 const CARDS = [
-  { kind: 'browser', delay: 1.2, x: '60%', y: '15%',  rotate: -2,   parallax: 1   },
-  { kind: 'palette', delay: 1.5, x: '68%', y: '46%', rotate:  1.5, parallax: -0.7 },
-  { kind: 'type',    delay: 1.8, x: '58%', y: '74%', rotate: -1,   parallax: 0.9 },
+  { kind: 'browser', delay: 1.2, x: '60%', y: '12%', rotate: -2,   parallax: 1   },
+  { kind: 'palette', delay: 1.5, x: '68%', y: '40%', rotate:  1.5, parallax: -0.7 },
+  { kind: 'type',    delay: 1.8, x: '58%', y: '64%', rotate: -1,   parallax: 0.9 },
 ] as const
 
 export default function Hero() {

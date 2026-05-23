@@ -9,6 +9,7 @@
   --bg:        #F7F6F2;
   --surface:   #F9F8F5;
   --surface-2: #EDEAE5;
+  --surface-rgb: 249, 248, 245;  /* RGB form of --surface, for rgba() composition */
   --text:      #28251D;
   --muted:     #7A7974;
   --accent:    #01696F;
@@ -28,6 +29,7 @@
   --bg:        #171614;
   --surface:   #1C1B19;
   --surface-2: #242220;
+  --surface-rgb: 28, 27, 25;  /* RGB form of --surface, for rgba() composition */
   --text:      #CDCCCA;
   --muted:     #7A7974;
   --accent:    #4F98A3;
