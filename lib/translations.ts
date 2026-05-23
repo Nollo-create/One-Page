@@ -27,6 +27,10 @@ export const translations = {
       nextTestimonial:  'Next testimonial',
       switchToSerbian:  'Switch to Serbian',
       switchToEnglish:  'Switch to English',
+      whatsapp:         'Chat on WhatsApp',
+    },
+    whatsapp: {
+      greeting: 'Hello! I am interested in your services.',
     },
     hero: {
       tag:    'Web Design Studio',
@@ -200,6 +204,10 @@ export const translations = {
       nextTestimonial:  'Sledeća preporuka',
       switchToSerbian:  'Prebaci na srpski',
       switchToEnglish:  'Prebaci na engleski',
+      whatsapp:         'Piši nam na WhatsApp',
+    },
+    whatsapp: {
+      greeting: 'Zdravo! Zainteresovan/a sam za vaše usluge.',
     },
     hero: {
       tag:    'Studio za web dizajn',

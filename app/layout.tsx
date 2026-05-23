@@ -20,13 +20,25 @@ const sans = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'SAJTPRESS — Web Design Studio',
+  metadataBase: new URL('https://studio.sajtpress.rs'),
+  title: {
+    default:  'SAJTPRESS — Web Design Studio',
+    template: '%s · SAJTPRESS',
+  },
   description:
     'A boutique web design studio crafting premium digital experiences for ambitious brands. Web design, development, and brand identity.',
   openGraph: {
-    title: 'SAJTPRESS — Web Design Studio',
+    title:       'SAJTPRESS — Web Design Studio',
     description: 'Premium digital experiences for ambitious brands.',
-    type: 'website',
+    url:         'https://studio.sajtpress.rs',
+    siteName:    'SAJTPRESS',
+    type:        'website',
+    locale:      'sr_RS',
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       'SAJTPRESS — Web Design Studio',
+    description: 'Premium digital experiences for ambitious brands.',
   },
 }
 

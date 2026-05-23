@@ -48,8 +48,8 @@ export default function BackToTop() {
           whileTap={{ scale: 0.94 }}
           style={{
             position: 'fixed',
-            bottom: '28px',
-            right: '24px',
+            bottom: '92px',
+            right: '28px',
             width: '46px',
             height: '46px',
             borderRadius: '50%',

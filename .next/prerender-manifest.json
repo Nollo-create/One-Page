@@ -74,11 +74,11 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/favicon.ico": {
+    "/icon.svg": {
       "initialHeaders": {
         "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "image/x-icon",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+        "content-type": "image/svg+xml",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/icon.svg/layout,_N_T_/icon.svg/route,_N_T_/icon.svg"
       },
       "experimentalBypassFor": [
         {
@@ -92,7 +92,36 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/favicon.ico",
+      "srcRoute": "/icon.svg",
+      "dataRoute": null,
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/opengraph-image": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/png",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/opengraph-image/layout,_N_T_/opengraph-image/route,_N_T_/opengraph-image"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/opengraph-image",
       "dataRoute": null,
       "allowHeader": [
         "host",
@@ -107,8 +136,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "6abf7c08e5905afe89dfab9abbbf4b42",
-    "previewModeSigningKey": "125f3d0b250a73a8f845b4fcd07e827c161342c7be3efde43dcfc5d05b35c92f",
-    "previewModeEncryptionKey": "181420425d7f90bc34a0f89c652ab76150dbb4f3064ef42163d4a11d2a7235d7"
+    "previewModeId": "9c63053dfd0a514114120a3f42ec2104",
+    "previewModeSigningKey": "2eb12c17ad7f027c6d742813a43266e9b5c8604b8e0f312422cfde6738ddc546",
+    "previewModeEncryptionKey": "3d648e91b9ff005e9beca94e113d786200a66c2b2f10592ba01f681af75a17fd"
   }
 }
