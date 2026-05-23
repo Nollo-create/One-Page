@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
+  // Server mode (no `output: 'export'`) — runs as a Node.js app via `next start`.
 };
 
 export default nextConfig;
