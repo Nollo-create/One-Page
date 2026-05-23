@@ -205,11 +205,11 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Cursor trail — runs on the whole hero, desktop only */}
-      {!reduced && <CursorTrail />}
+      {/* Cursor trail — runs on the whole hero (self-skips when reduced-motion is on) */}
+      <CursorTrail />
 
-      {/* Floating design-tool cards — desktop only */}
-      {!reduced && CARDS.map((card, i) => (
+      {/* Design-tool cards — always shown on desktop, animations gated on reduced-motion */}
+      {CARDS.map((card, i) => (
         <motion.div
           key={card.kind}
           className="md-show"
@@ -217,21 +217,21 @@ export default function Hero() {
             position: 'absolute',
             left: card.x,
             top:  card.y,
-            x: cardX[i],
-            y: cardY[i],
+            x: reduced ? 0 : cardX[i],
+            y: reduced ? 0 : cardY[i],
             rotate: card.rotate,
             display: 'none',
             zIndex: 3,
           }}
-          initial={{ opacity: 0, scale: 0.85, y: 24 }}
+          initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: 24 }}
           animate={started
-            ? { opacity: 1, scale: 1, y: [0, -8, 0] }
-            : { opacity: 0, scale: 0.85, y: 24 }
+            ? (reduced ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1, y: [0, -8, 0] })
+            : (reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: 24 })
           }
-          transition={{
+          transition={reduced ? { duration: 0 } : {
             opacity: { delay: card.delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] },
             scale:   { delay: card.delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-            y: { delay: card.delay + 0.9, duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut' },
+            y:       { delay: card.delay + 0.9, duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
           {card.kind === 'browser' && <BrowserCard />}

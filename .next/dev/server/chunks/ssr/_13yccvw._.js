@@ -1388,29 +1388,35 @@ function Hero() {
                 lineNumber: 110,
                 columnNumber: 7
             }, this),
-            !reduced && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CursorTrail$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CursorTrail$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/Hero.tsx",
                 lineNumber: 209,
-                columnNumber: 20
+                columnNumber: 7
             }, this),
-            !reduced && CARDS.map((card, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+            CARDS.map((card, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
                     className: "md-show",
                     style: {
                         position: 'absolute',
                         left: card.x,
                         top: card.y,
-                        x: cardX[i],
-                        y: cardY[i],
+                        x: reduced ? 0 : cardX[i],
+                        y: reduced ? 0 : cardY[i],
                         rotate: card.rotate,
                         display: 'none',
                         zIndex: 3
                     },
-                    initial: {
+                    initial: reduced ? {
+                        opacity: 1,
+                        scale: 1
+                    } : {
                         opacity: 0,
                         scale: 0.85,
                         y: 24
                     },
-                    animate: started ? {
+                    animate: started ? reduced ? {
+                        opacity: 1,
+                        scale: 1
+                    } : {
                         opacity: 1,
                         scale: 1,
                         y: [
@@ -1418,12 +1424,17 @@ function Hero() {
                             -8,
                             0
                         ]
+                    } : reduced ? {
+                        opacity: 1,
+                        scale: 1
                     } : {
                         opacity: 0,
                         scale: 0.85,
                         y: 24
                     },
-                    transition: {
+                    transition: reduced ? {
+                        duration: 0
+                    } : {
                         opacity: {
                             delay: card.delay,
                             duration: 0.7,
