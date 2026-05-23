@@ -31,10 +31,10 @@ export default function CursorTrail({
     const parent = canvas.parentElement
     if (!parent) return
 
-    // Respect reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    // Skip on touch/coarse-pointer devices — no cursor to follow, just wasted CPU
-    if (window.matchMedia('(pointer: coarse)').matches) return
+    // The trail is subtle enough to keep on even with reduced-motion preference.
+    // We DO skip it on touch-only devices (no fine pointer available at all)
+    // because the effect can't be triggered without a mouse/trackpad anyway.
+    if (!window.matchMedia('(any-pointer: fine)').matches) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
