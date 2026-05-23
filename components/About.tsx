@@ -3,18 +3,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
-import { fadeUp, slideRight, scaleIn } from '@/lib/motion'
+import { fadeUp, scaleIn } from '@/lib/motion'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-const STATS = [
-  { display: '2014', value: null,  label: 'Year founded'     },
-  { display: null,   value: 8,     label: 'Team members'     },
-  { display: null,   value: 14,    label: 'Industry awards'  },
-]
+import { useT } from '@/lib/LanguageContext'
 
 export default function About() {
+  const t = useT()
+
   return (
     <section id="about" className="section" style={{ backgroundColor: 'var(--surface)' }}>
       <div className="container">
@@ -29,34 +26,30 @@ export default function About() {
           {/* Left — text */}
           <div>
             <AnimateIn variants={fadeUp}>
-              <p className="text-label" style={{ marginBottom: '20px' }}>About Sajtpress</p>
+              <p className="text-label" style={{ marginBottom: '20px' }}>{t.about.label}</p>
             </AnimateIn>
 
             <AnimateIn variants={fadeUp} delay={0.08}>
               <h2 className="text-heading" style={{ marginBottom: '28px' }}>
-                Small studio.
+                {t.about.heading[0]}
                 <br />
-                <em className="font-serif" style={{ fontStyle: 'italic' }}>Big ambition.</em>
+                <em className="font-serif" style={{ fontStyle: 'italic' }}>{t.about.heading[1]}</em>
               </h2>
             </AnimateIn>
 
             <AnimateIn variants={fadeUp} delay={0.16}>
               <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '20px' }}>
-                We're a focused team of designers and developers who believe that
-                great digital work comes from genuine collaboration, clear thinking,
-                and an obsessive attention to craft.
+                {t.about.p1}
               </p>
             </AnimateIn>
 
             <AnimateIn variants={fadeUp} delay={0.22}>
               <p style={{ fontSize: '16px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '44px' }}>
-                We don't take on dozens of projects at once. We stay selective
-                so every client gets our full attention — from the first call
-                to the day we hit launch, and beyond.
+                {t.about.p2}
               </p>
             </AnimateIn>
 
-            {/* Stats row */}
+            {/* Stats with count-up */}
             <AnimateIn variants={fadeUp} delay={0.28}>
               <div
                 style={{
@@ -67,14 +60,20 @@ export default function About() {
                   flexWrap: 'wrap',
                 }}
               >
-                {STATS.map((stat, i) => (
-                  <StatItem key={stat.label} {...stat} index={i} />
+                {t.about.stats.map((stat, i) => (
+                  <StatItem
+                    key={stat.label}
+                    display={'display' in stat ? stat.display : null}
+                    value={'value' in stat ? stat.value : null}
+                    label={stat.label}
+                    index={i}
+                  />
                 ))}
               </div>
             </AnimateIn>
           </div>
 
-          {/* Right — visual cards */}
+          {/* Right — visual */}
           <AnimateIn variants={scaleIn} delay={0.18}>
             <AboutVisual />
           </AnimateIn>
@@ -134,6 +133,7 @@ function StatItem({
 }
 
 function AboutVisual() {
+  const t = useT()
   const [ref0, inView0] = useInViewOnce(0.15)
   const [ref1, inView1] = useInViewOnce(0.15)
   const [ref2, inView2] = useInViewOnce(0.15)
@@ -162,10 +162,10 @@ function AboutVisual() {
         />
         <div>
           <p style={{ fontSize: '14px', fontWeight: 500, marginBottom: '6px', color: 'var(--text)' }}>
-            Quality over volume
+            {t.about.visual.quality}
           </p>
           <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
-            We limit our active projects to ensure each one receives the depth it deserves.
+            {t.about.visual.qualityDesc}
           </p>
         </div>
       </motion.div>
@@ -187,7 +187,7 @@ function AboutVisual() {
           className="font-serif"
           style={{ fontSize: '20px', lineHeight: 1.4, letterSpacing: '-0.01em', marginBottom: '20px' }}
         >
-          "Design is not decoration — it's the language through which your business speaks."
+          {t.about.visual.quote}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
@@ -199,8 +199,8 @@ function AboutVisual() {
             }}
           />
           <div>
-            <p style={{ fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>Nikola Ristić</p>
-            <p style={{ fontSize: '12px', opacity: 0.65 }}>Creative Director, SAJTPRESS</p>
+            <p style={{ fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>{t.about.visual.author}</p>
+            <p style={{ fontSize: '12px', opacity: 0.65 }}>{t.about.visual.role}</p>
           </div>
         </div>
       </motion.div>
@@ -221,12 +221,12 @@ function AboutVisual() {
         }}
       >
         <div>
-          <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '4px' }}>Currently based in</p>
-          <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text)' }}>Belgrade, Serbia 🇷🇸</p>
+          <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '4px' }}>{t.about.visual.based}</p>
+          <p style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text)' }}>{t.about.visual.location}</p>
         </div>
         <div style={{ fontSize: '13px', color: 'var(--muted)', textAlign: 'right' }}>
-          <p>Remote-first</p>
-          <p>Global clients</p>
+          <p>{t.about.visual.remote}</p>
+          <p>{t.about.visual.global}</p>
         </div>
       </motion.div>
 

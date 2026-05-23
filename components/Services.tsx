@@ -6,39 +6,11 @@ import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-const SERVICES = [
-  {
-    number: '01',
-    title: 'Web Design',
-    description:
-      'Pixel-perfect interfaces that balance aesthetics with conversion. Every visual decision serves a strategic purpose — from layout to micro-interaction.',
-    tags: ['UI Design', 'Responsive', 'Prototyping'],
-  },
-  {
-    number: '02',
-    title: 'Web Development',
-    description:
-      'Clean, fast, maintainable code built with modern frameworks. We optimize for performance, accessibility, and long-term scalability.',
-    tags: ['Next.js', 'TypeScript', 'CMS'],
-  },
-  {
-    number: '03',
-    title: 'UX Strategy',
-    description:
-      'User journeys mapped with precision. We design for how people actually think and behave — removing friction, building trust.',
-    tags: ['Research', 'Flows', 'Testing'],
-  },
-  {
-    number: '04',
-    title: 'Brand Identity',
-    description:
-      'Visual systems that communicate before you say a word. Cohesive, memorable brand identities built to last across every touchpoint.',
-    tags: ['Logo', 'Guidelines', 'Visual Identity'],
-  },
-]
+import { useT } from '@/lib/LanguageContext'
 
 export default function Services() {
+  const t = useT()
+
   return (
     <section id="services" className="section" style={{ backgroundColor: 'var(--surface)' }}>
       <div className="container">
@@ -55,17 +27,17 @@ export default function Services() {
           }}
         >
           <AnimateIn variants={fadeUp}>
-            <p className="text-label" style={{ marginBottom: '16px' }}>What We Do</p>
+            <p className="text-label" style={{ marginBottom: '16px' }}>{t.services.label}</p>
             <h2 className="text-heading">
-              Full-spectrum
+              {t.services.heading[0]}
               <br />
-              <em className="font-serif" style={{ fontStyle: 'italic' }}>digital craft</em>
+              <em className="font-serif" style={{ fontStyle: 'italic' }}>{t.services.heading[1]}</em>
             </h2>
           </AnimateIn>
 
           <AnimateIn variants={slideRight} delay={0.18}>
             <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '320px', lineHeight: 1.7 }}>
-              From concept to launch, we handle every layer of the digital experience — thoughtfully, intentionally.
+              {t.services.desc}
             </p>
           </AnimateIn>
         </div>
@@ -81,8 +53,15 @@ export default function Services() {
             overflow: 'hidden',
           }}
         >
-          {SERVICES.map((service, i) => (
-            <ServiceCard key={service.number} {...service} index={i} />
+          {t.services.items.map((service, i) => (
+            <ServiceCard
+              key={service.number}
+              number={service.number}
+              title={service.title}
+              description={service.desc}
+              tags={[...service.tags]}
+              index={i}
+            />
           ))}
         </div>
 

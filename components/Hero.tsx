@@ -5,15 +5,8 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, ArrowDown } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useT } from '@/lib/LanguageContext'
 import { spring } from '@/lib/motion'
-
-const LINES = ['We craft', 'digital', 'experiences', 'that captivate.']
-
-const STATS = [
-  { value: 10,  suffix: '+', label: 'Years of craft' },
-  { value: 150, suffix: '+', label: 'Projects shipped' },
-  { value: 98,  suffix: '%', label: 'Client satisfaction' },
-]
 
 const CHIPS = [
   { label: 'Aa', sub: 'Instrument Serif', note: 'Display typeface', delay: 1.3, x: '62%', y: '22%', rotate: -2 },
@@ -24,7 +17,10 @@ const CHIPS = [
 export default function Hero() {
   const [started, setStarted] = useState(false)
   const reduced = useReducedMotion()
+  const t = useT()
   const containerRef = useRef<HTMLElement>(null)
+  const LINES = t.hero.lines
+  const STATS = t.hero.stats
 
   // Mouse-parallax for hero floaters
   const rawX = useMotionValue(0)
@@ -125,9 +121,9 @@ export default function Hero() {
             gap: '12px',
           }}
         >
-          <span className="tag">Web Design Studio</span>
+          <span className="tag">{t.hero.tag}</span>
           <span style={{ fontSize: '13px', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            Est. 2014 &nbsp;<ArrowRight size={12} style={{ transform: 'rotate(-45deg)' }} />
+            {t.hero.est} &nbsp;<ArrowRight size={12} style={{ transform: 'rotate(-45deg)' }} />
           </span>
         </motion.div>
 
@@ -174,8 +170,7 @@ export default function Hero() {
             marginBottom: '44px',
           }}
         >
-          A boutique studio building fast, elegant, high-converting
-          websites for brands that take their craft seriously.
+          {t.hero.sub}
         </motion.p>
 
         {/* CTAs */}
@@ -186,10 +181,10 @@ export default function Hero() {
           style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '80px' }}
         >
           <MagneticBtn href="#work" primary>
-            View Our Work <ArrowRight size={15} />
+            {t.cta.viewWork} <ArrowRight size={15} />
           </MagneticBtn>
           <MagneticBtn href="#contact">
-            Start a Project
+            {t.cta.startProject}
           </MagneticBtn>
         </motion.div>
 
@@ -255,7 +250,7 @@ export default function Hero() {
           textTransform: 'uppercase',
         }}
       >
-        <span>Scroll</span>
+        <span>{t.hero.scroll}</span>
         <motion.div
           animate={{ y: [0, 5, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}

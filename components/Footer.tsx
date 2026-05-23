@@ -1,14 +1,15 @@
 'use client'
 
 import { ArrowUpRight } from 'lucide-react'
+import { useT } from '@/lib/LanguageContext'
 
 const NAV = [
-  { label: 'Work',        href: '#work' },
-  { label: 'Services',    href: '#services' },
-  { label: 'About',       href: '#about' },
-  { label: 'Process',     href: '#process' },
-  { label: 'Contact',     href: '#contact' },
-]
+  { key: 'work',     href: '#work'     },
+  { key: 'services', href: '#services' },
+  { key: 'about',    href: '#about'    },
+  { key: 'process',  href: '#process'  },
+  { key: 'contact',  href: '#contact'  },
+] as const
 
 const SOCIAL = [
   { label: 'Dribbble',  href: '#' },
@@ -18,6 +19,7 @@ const SOCIAL = [
 ]
 
 export default function Footer() {
+  const t = useT()
   const year = new Date().getFullYear()
 
   return (
@@ -49,17 +51,17 @@ export default function Footer() {
               SAJTPRESS
             </a>
             <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '240px' }}>
-              A boutique web design studio crafting premium digital experiences for ambitious brands.
+              {t.footer.tagline}
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <p className="text-label" style={{ marginBottom: '20px' }}>Navigation</p>
+            <p className="text-label" style={{ marginBottom: '20px' }}>{t.footer.navTitle}</p>
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {NAV.map(link => (
                 <a
-                  key={link.label}
+                  key={link.key}
                   href={link.href}
                   style={{
                     fontSize: '14px',
@@ -71,7 +73,7 @@ export default function Footer() {
                   onMouseEnter={e => { e.currentTarget.style.color = 'var(--text)' }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)' }}
                 >
-                  {link.label}
+                  {t.nav[link.key]}
                 </a>
               ))}
             </nav>
@@ -79,7 +81,7 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <p className="text-label" style={{ marginBottom: '20px' }}>Follow Us</p>
+            <p className="text-label" style={{ marginBottom: '20px' }}>{t.footer.social}</p>
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {SOCIAL.map(link => (
                 <a
@@ -107,12 +109,12 @@ export default function Footer() {
 
           {/* CTA */}
           <div>
-            <p className="text-label" style={{ marginBottom: '20px' }}>Start a Project</p>
+            <p className="text-label" style={{ marginBottom: '20px' }}>{t.footer.ctaTitle}</p>
             <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.7, marginBottom: '20px' }}>
-              Have a project in mind? We'd love to hear about it.
+              {t.footer.ctaDesc}
             </p>
             <a href="#contact" className="btn btn-primary" style={{ fontSize: '13px', padding: '11px 18px' }}>
-              Get in Touch <ArrowUpRight size={13} />
+              {t.cta.getInTouch} <ArrowUpRight size={13} />
             </a>
           </div>
         </div>
@@ -131,10 +133,10 @@ export default function Footer() {
           }}
         >
           <p style={{ fontSize: '13px', color: 'var(--muted)' }}>
-            © {year} SAJTPRESS Studio. All rights reserved.
+            © {year} SAJTPRESS Studio. {t.footer.copyright}
           </p>
           <div style={{ display: 'flex', gap: '24px' }}>
-            {['Privacy Policy', 'Terms of Service'].map(item => (
+            {[t.footer.privacy, t.footer.terms].map(item => (
               <a
                 key={item}
                 href="#"

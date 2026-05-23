@@ -5,38 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp } from '@/lib/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useT } from '@/lib/LanguageContext'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-const TESTIMONIALS = [
-  {
-    quote:
-      "Working with SAJTPRESS was completely different from any agency we'd worked with before. They understood our brand immediately and pushed us in directions we hadn't considered — every one of which was right.",
-    author: 'Sarah Chen',
-    role: 'CEO, Portakal Wines',
-    initials: 'SC',
-    rating: 5,
-  },
-  {
-    quote:
-      'The website they built increased our lead conversion by 40%. But beyond the numbers, it just feels right. Every interaction, every transition — it communicates exactly who Meridian is.',
-    author: 'Marcus Reid',
-    role: 'Founder, Meridian Capital',
-    initials: 'MR',
-    rating: 5,
-  },
-  {
-    quote:
-      "SAJTPRESS doesn't just execute a brief — they think with you. Our e-commerce site went from generic to genuinely beautiful, and sales reflect that shift immediately.",
-    author: 'Yuki Tanaka',
-    role: 'Creative Director, Hana Studio',
-    initials: 'YT',
-    rating: 5,
-  },
-]
 
 const INTERVAL_MS = 5000
 
 export default function Testimonials() {
+  const tr                        = useT()
+  const TESTIMONIALS              = tr.testimonials.items
   const [active, setActive]       = useState(0)
   const [resetKey, setResetKey]   = useState(0)
   const reduced                   = useReducedMotion()
@@ -50,7 +26,7 @@ export default function Testimonials() {
       setResetKey(k => k + 1)
     }, INTERVAL_MS)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [resetKey, reduced])
+  }, [resetKey, reduced, TESTIMONIALS.length])
 
   const navigate = (index: number) => {
     setActive(index)
@@ -79,11 +55,11 @@ export default function Testimonials() {
           }}
         >
           <AnimateIn variants={fadeUp}>
-            <p className="text-label" style={{ marginBottom: '16px' }}>Client Stories</p>
+            <p className="text-label" style={{ marginBottom: '16px' }}>{tr.testimonials.label}</p>
             <h2 className="text-heading">
-              Words from
+              {tr.testimonials.heading[0]}
               <br />
-              <em className="font-serif" style={{ fontStyle: 'italic' }}>our clients</em>
+              <em className="font-serif" style={{ fontStyle: 'italic' }}>{tr.testimonials.heading[1]}</em>
             </h2>
           </AnimateIn>
 
@@ -92,7 +68,7 @@ export default function Testimonials() {
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={prev}
-                aria-label="Previous testimonial"
+                aria-label={tr.aria.prevTestimonial}
                 style={{
                   width: '40px',
                   height: '40px',
@@ -113,7 +89,7 @@ export default function Testimonials() {
               </button>
               <button
                 onClick={next}
-                aria-label="Next testimonial"
+                aria-label={tr.aria.nextTestimonial}
                 style={{
                   width: '40px',
                   height: '40px',

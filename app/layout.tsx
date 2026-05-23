@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Instrument_Serif, Inter } from 'next/font/google'
 import Script from 'next/script'
 import { ThemeProvider } from '@/lib/ThemeContext'
+import { LanguageProvider } from '@/lib/LanguageContext'
 import './globals.css'
 
 const serif = Instrument_Serif({
@@ -48,7 +49,9 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark')}catch(e){}})()`,
           }}
         />
-        <ThemeProvider>{children}</ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

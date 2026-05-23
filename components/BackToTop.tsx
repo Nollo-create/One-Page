@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
+import { useT } from '@/lib/LanguageContext'
 
 export default function BackToTop() {
+  const t = useT()
   const [visible, setVisible] = useState(false)
 
   // Magnetic hover state
@@ -34,7 +36,7 @@ export default function BackToTop() {
     <AnimatePresence>
       {visible && (
         <motion.button
-          aria-label="Scroll to top"
+          aria-label={t.aria.backToTop}
           onClick={scrollTop}
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}

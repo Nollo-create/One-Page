@@ -3,17 +3,20 @@
 import { useState, useEffect } from 'react'
 import { motion, LayoutGroup, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/lib/ThemeContext'
+import { useT } from '@/lib/LanguageContext'
+import LanguageToggle from '@/components/LanguageToggle'
 import { Sun, Moon, Menu, X, ArrowRight } from 'lucide-react'
 
-const NAV_LINKS = [
-  { label: 'Work',     href: '#work'     },
-  { label: 'Services', href: '#services' },
-  { label: 'About',    href: '#about'    },
-  { label: 'Process',  href: '#process'  },
-]
+const NAV = [
+  { key: 'work',     href: '#work'     },
+  { key: 'services', href: '#services' },
+  { key: 'about',    href: '#about'    },
+  { key: 'process',  href: '#process'  },
+] as const
 
 export default function Header() {
   const { theme, toggle }                     = useTheme()
+  const t                                     = useT()
   const [scrolled, setScrolled]               = useState(false)
   const [menuOpen, setMenuOpen]               = useState(false)
   const [activeSection, setActiveSection]     = useState('')
@@ -33,13 +36,12 @@ export default function Header() {
 
   // Active section indicator via IntersectionObserver
   useEffect(() => {
-    const ids = NAV_LINKS.map(l => l.href.slice(1))
+    const ids = NAV.map(l => l.href.slice(1))
     const observers = ids.map(id => {
       const el = document.getElementById(id)
       if (!el) return null
       const obs = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
-        // thin horizontal band centred in the viewport
         { rootMargin: '-40% 0px -50% 0px', threshold: 0 }
       )
       obs.observe(el)
@@ -70,26 +72,30 @@ export default function Header() {
             <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <LayoutGroup id="header-nav">
                 <div className="hidden md:flex" style={{ alignItems: 'center', gap: '4px', marginRight: '8px' }}>
-                  {NAV_LINKS.map(link => (
+                  {NAV.map(link => (
                     <NavLink
-                      key={link.label}
+                      key={link.key}
                       href={link.href}
                       isActive={activeSection === link.href.slice(1)}
                     >
-                      {link.label}
+                      {t.nav[link.key]}
                     </NavLink>
                   ))}
                 </div>
               </LayoutGroup>
 
+              {/* Language toggle */}
+              <LanguageToggle />
+
+              {/* Theme toggle */}
               <motion.button
                 onClick={toggle}
                 className="icon-btn"
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92, rotate: -20 }}
                 transition={{ type: 'spring', damping: 18, stiffness: 320 }}
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                style={{ overflow: 'hidden' }}
+                aria-label={theme === 'dark' ? t.aria.lightMode : t.aria.darkMode}
+                style={{ overflow: 'hidden', marginLeft: '4px' }}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span
@@ -110,14 +116,14 @@ export default function Header() {
                 className="btn btn-primary hidden md:inline-flex"
                 style={{ fontSize: '13px', padding: '10px 18px', marginLeft: '8px' }}
               >
-                Start a Project <ArrowRight size={13} />
+                {t.cta.startProject} <ArrowRight size={13} />
               </a>
 
               <button
                 onClick={() => setMenuOpen(true)}
                 className="icon-btn md:hidden"
                 style={{ marginLeft: '4px' }}
-                aria-label="Open menu"
+                aria-label={t.aria.openMenu}
               >
                 <Menu size={16} />
               </button>
@@ -133,15 +139,15 @@ export default function Header() {
           <span className="font-serif" style={{ fontSize: '18px', letterSpacing: '0.08em', color: 'var(--text)' }}>
             SAJTPRESS
           </span>
-          <button onClick={() => setMenuOpen(false)} className="icon-btn" aria-label="Close menu">
+          <button onClick={() => setMenuOpen(false)} className="icon-btn" aria-label={t.aria.closeMenu}>
             <X size={16} />
           </button>
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          {NAV_LINKS.map((link, i) => (
+          {NAV.map((link, i) => (
             <a
-              key={link.label}
+              key={link.key}
               href={link.href}
               onClick={() => setMenuOpen(false)}
               className="font-serif"
@@ -156,7 +162,7 @@ export default function Header() {
                 animation: menuOpen ? `fadeIn .3s ease ${i * 0.06 + 0.1}s forwards` : 'none',
               }}
             >
-              {link.label}
+              {t.nav[link.key]}
             </a>
           ))}
         </nav>
@@ -167,7 +173,7 @@ export default function Header() {
           className="btn btn-primary"
           style={{ marginTop: '32px', justifyContent: 'center', fontSize: '15px', padding: '15px 24px' }}
         >
-          Start a Project <ArrowRight size={14} />
+          {t.cta.startProject} <ArrowRight size={14} />
         </a>
       </div>
 

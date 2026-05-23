@@ -6,46 +6,10 @@ import { AnimateIn } from '@/components/AnimateIn'
 import { fadeUp, slideRight } from '@/lib/motion'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-
-const STEPS = [
-  {
-    number: '01',
-    title: 'Discovery',
-    description:
-      'We start by understanding your business, your audience, and your goals. Through structured workshops and conversations, we map the full landscape before touching a single pixel.',
-    duration: '1–2 weeks',
-  },
-  {
-    number: '02',
-    title: 'Strategy',
-    description:
-      'We define the direction: information architecture, user flows, content strategy, and the core positioning that will guide every design decision that follows.',
-    duration: '1 week',
-  },
-  {
-    number: '03',
-    title: 'Design',
-    description:
-      'Visual concepts that align with your brand and speak directly to your users. We iterate quickly, present clearly, and refine until every detail is exactly right.',
-    duration: '2–4 weeks',
-  },
-  {
-    number: '04',
-    title: 'Development',
-    description:
-      'We translate designs into fast, accessible, responsive code. Every interaction is crafted with care. We test across devices and browsers before a single line goes live.',
-    duration: '2–6 weeks',
-  },
-  {
-    number: '05',
-    title: 'Launch & Grow',
-    description:
-      "We don't just deliver and disappear. We support your launch, monitor performance, and remain a strategic partner as your business evolves.",
-    duration: 'Ongoing',
-  },
-]
+import { useT } from '@/lib/LanguageContext'
 
 export default function Process() {
+  const t = useT()
   const reduced = useReducedMotion()
   const stepsRef = useRef<HTMLDivElement>(null)
 
@@ -63,7 +27,7 @@ export default function Process() {
         {/* Header */}
         <div style={{ marginBottom: '64px' }}>
           <AnimateIn variants={fadeUp}>
-            <p className="text-label" style={{ marginBottom: '16px' }}>How We Work</p>
+            <p className="text-label" style={{ marginBottom: '16px' }}>{t.process.label}</p>
           </AnimateIn>
           <div
             style={{
@@ -76,14 +40,14 @@ export default function Process() {
           >
             <AnimateIn variants={fadeUp} delay={0.1}>
               <h2 className="text-heading">
-                A process built
+                {t.process.heading[0]}
                 <br />
-                <em className="font-serif" style={{ fontStyle: 'italic' }}>for results</em>
+                <em className="font-serif" style={{ fontStyle: 'italic' }}>{t.process.heading[1]}</em>
               </h2>
             </AnimateIn>
             <AnimateIn variants={slideRight} delay={0.2}>
               <p style={{ fontSize: '15px', color: 'var(--muted)', maxWidth: '340px', lineHeight: 1.7 }}>
-                Transparent, collaborative, and predictable. You'll always know where we are and what comes next.
+                {t.process.desc}
               </p>
             </AnimateIn>
           </div>
@@ -92,7 +56,6 @@ export default function Process() {
         {/* Steps — scroll-driven progress line */}
         <div style={{ position: 'relative' }}>
 
-          {/* Background track */}
           {!reduced && (
             <div
               aria-hidden
@@ -108,7 +71,6 @@ export default function Process() {
             />
           )}
 
-          {/* Animated accent fill */}
           {!reduced && (
             <motion.div
               aria-hidden
@@ -127,7 +89,7 @@ export default function Process() {
           )}
 
           <div ref={stepsRef}>
-            {STEPS.map((step, i) => (
+            {t.process.steps.map((step, i) => (
               <ProcessStep key={step.number} {...step} index={i} />
             ))}
           </div>
@@ -141,24 +103,23 @@ export default function Process() {
 function ProcessStep({
   number,
   title,
-  description,
+  desc,
   duration,
   index,
 }: {
   number: string
   title: string
-  description: string
+  desc: string
   duration: string
   index: number
 }) {
   const reduced = useReducedMotion()
-  const [ref, inView] = useInViewOnce(0.2)
 
   return (
     <motion.div
-      ref={ref as React.RefObject<HTMLDivElement>}
       initial={reduced ? {} : { opacity: 0, x: -20 }}
-      animate={inView || reduced ? { opacity: 1, x: 0 } : {}}
+      whileInView={reduced ? {} : { opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: index * 0.07 }}
       style={{ borderTop: '1px solid var(--border)' }}
     >
@@ -173,7 +134,12 @@ function ProcessStep({
       >
         <span
           className="font-serif"
-          style={{ fontSize: '13px', color: 'var(--muted)', paddingTop: '4px', letterSpacing: '0.04em' }}
+          style={{
+            fontSize: '13px',
+            color: 'var(--muted)',
+            paddingTop: '4px',
+            letterSpacing: '0.04em',
+          }}
         >
           {number}
         </span>
@@ -186,7 +152,7 @@ function ProcessStep({
             {title}
           </h3>
           <p style={{ fontSize: '15px', color: 'var(--muted)', lineHeight: 1.75, maxWidth: '560px' }}>
-            {description}
+            {desc}
           </p>
         </div>
 

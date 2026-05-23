@@ -1,18 +1,10 @@
-const ITEMS = [
-  'Web Design',
-  'Brand Identity',
-  'UX Strategy',
-  'Web Development',
-  'E-commerce',
-  'Digital Experiences',
-  'Creative Direction',
-  'Motion Design',
-  'Product Design',
-  'Visual Systems',
-]
+'use client'
+
+import { useT } from '@/lib/LanguageContext'
 
 export default function Marquee() {
-  const doubled = [...ITEMS, ...ITEMS]
+  const t = useT()
+  const doubled = [...t.marquee, ...t.marquee]
 
   return (
     <div
