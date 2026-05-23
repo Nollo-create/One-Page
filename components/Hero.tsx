@@ -7,12 +7,14 @@ import { useCountUp } from '@/hooks/useCountUp'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useT } from '@/lib/LanguageContext'
 import { spring } from '@/lib/motion'
+import CursorTrail from '@/components/CursorTrail'
 
-const CHIPS = [
-  { label: 'Aa', sub: 'Instrument Serif', note: 'Display typeface', delay: 1.3, x: '62%', y: '22%', rotate: -2 },
-  { label: '■■■', sub: 'Color System', note: '#01696F · #F7F6F2', delay: 1.6, x: '66%', y: '52%', rotate: 1.5 },
-  { label: '→', sub: 'Interactions', note: 'Motion · Spring · Ease', delay: 1.9, x: '60%', y: '76%', rotate: -1 },
-]
+// Three interactive design-tool cards, positioned in the right half of the hero.
+const CARDS = [
+  { kind: 'browser', delay: 1.2, x: '60%', y: '15%',  rotate: -2,   parallax: 1   },
+  { kind: 'palette', delay: 1.5, x: '68%', y: '46%', rotate:  1.5, parallax: -0.7 },
+  { kind: 'type',    delay: 1.8, x: '58%', y: '74%', rotate: -1,   parallax: 0.9 },
+] as const
 
 export default function Hero() {
   const [started, setStarted] = useState(false)
@@ -28,15 +30,15 @@ export default function Hero() {
   const springX = useSpring(rawX, { damping: 40, stiffness: 150 })
   const springY = useSpring(rawY, { damping: 40, stiffness: 150 })
 
-  // Pre-compute chip transforms at top level (Rules of Hooks — no hooks in loops)
-  const chip0X = useTransform(springX, v => v * 1)
-  const chip0Y = useTransform(springY, v => v * 0.8)
-  const chip1X = useTransform(springX, v => v * -0.7)
-  const chip1Y = useTransform(springY, v => v * -1)
-  const chip2X = useTransform(springX, v => v * 1)
-  const chip2Y = useTransform(springY, v => v * 0.8)
-  const chipX = [chip0X, chip1X, chip2X]
-  const chipY = [chip0Y, chip1Y, chip2Y]
+  // Pre-compute parallax transforms at top level (Rules of Hooks — no hooks in loops)
+  const card0X = useTransform(springX, v => v * 1)
+  const card0Y = useTransform(springY, v => v * 0.8)
+  const card1X = useTransform(springX, v => v * -0.7)
+  const card1Y = useTransform(springY, v => v * -1)
+  const card2X = useTransform(springX, v => v * 0.9)
+  const card2Y = useTransform(springY, v => v * 0.6)
+  const cardX = [card0X, card1X, card2X]
+  const cardY = [card0Y, card1Y, card2Y]
 
   useEffect(() => {
     const t = setTimeout(() => setStarted(true), 80)
@@ -203,32 +205,38 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Floating design chips — desktop only */}
-      {!reduced && CHIPS.map((chip, i) => (
+      {/* Cursor trail — runs on the whole hero, desktop only */}
+      {!reduced && <CursorTrail />}
+
+      {/* Floating design-tool cards — desktop only */}
+      {!reduced && CARDS.map((card, i) => (
         <motion.div
-          key={i}
+          key={card.kind}
+          className="md-show"
           style={{
             position: 'absolute',
-            left: chip.x,
-            top: chip.y,
-            x: chipX[i],
-            y: chipY[i],
-            rotate: chip.rotate,
+            left: card.x,
+            top:  card.y,
+            x: cardX[i],
+            y: cardY[i],
+            rotate: card.rotate,
             display: 'none',
+            zIndex: 3,
           }}
-          className="md-show"
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          initial={{ opacity: 0, scale: 0.85, y: 24 }}
           animate={started
             ? { opacity: 1, scale: 1, y: [0, -8, 0] }
-            : { opacity: 0, scale: 0.8, y: 20 }
+            : { opacity: 0, scale: 0.85, y: 24 }
           }
           transition={{
-            opacity: { delay: chip.delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-            scale:   { delay: chip.delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-            y: { delay: chip.delay + 0.8, duration: 3.5 + i * 0.4, repeat: Infinity, ease: 'easeInOut' },
+            opacity: { delay: card.delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+            scale:   { delay: card.delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+            y: { delay: card.delay + 0.9, duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          <Chip {...chip} />
+          {card.kind === 'browser' && <BrowserCard />}
+          {card.kind === 'palette' && <PaletteCard />}
+          {card.kind === 'type'    && <TypographyCard />}
         </motion.div>
       ))}
 
@@ -266,31 +274,211 @@ export default function Hero() {
   )
 }
 
-// ── Floating chip card ──────────────────────────────────────────
-function Chip({ label, sub, note }: { label: string; sub: string; note: string; delay: number; x: string; y: string; rotate: number }) {
+// ─────────────────────────────────────────────────────────────────
+// Shared card chrome — glassmorphism + 3D tilt on mouse
+// ─────────────────────────────────────────────────────────────────
+function useTilt() {
+  const tx = useMotionValue(0)
+  const ty = useMotionValue(0)
+  const rotateX = useSpring(useTransform(ty, [-0.5, 0.5], [8, -8]),  { damping: 22, stiffness: 240 })
+  const rotateY = useSpring(useTransform(tx, [-0.5, 0.5], [-8, 8]),  { damping: 22, stiffness: 240 })
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    tx.set((e.clientX - r.left) / r.width  - 0.5)
+    ty.set((e.clientY - r.top)  / r.height - 0.5)
+  }
+  const onLeave = () => { tx.set(0); ty.set(0) }
+
+  return { rotateX, rotateY, onMove, onLeave }
+}
+
+const cardChrome: React.CSSProperties = {
+  background: 'rgba(var(--surface-rgb, 249,248,245), 0.78)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid var(--border)',
+  borderRadius: '12px',
+  boxShadow: 'var(--shadow-md)',
+  userSelect: 'none',
+  transformStyle: 'preserve-3d',
+  perspective: 1000,
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Card 1 — Mini browser mockup
+// ─────────────────────────────────────────────────────────────────
+function BrowserCard() {
+  const { rotateX, rotateY, onMove, onLeave } = useTilt()
   return (
-    <div style={{
-      background: 'rgba(var(--surface-rgb, 249,248,245), 0.72)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      border: '1px solid var(--border)',
-      borderRadius: '10px',
-      padding: '12px 16px',
-      boxShadow: 'var(--shadow-md)',
-      width: '168px',
-      userSelect: 'none',
-      pointerEvents: 'none',
-    }}>
-      <div style={{ fontSize: '18px', fontFamily: 'var(--font-serif)', marginBottom: '5px', color: 'var(--text)' }}>
-        {label}
+    <motion.div
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+      style={{ ...cardChrome, width: '220px', rotateX, rotateY, cursor: 'pointer' }}
+    >
+      {/* Window header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
+        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#FF5F57' }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#FEBC2E' }} />
+        <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#28C840' }} />
+        <span style={{
+          marginLeft: '6px',
+          fontSize: '9px',
+          color: 'var(--muted)',
+          padding: '2px 8px',
+          backgroundColor: 'var(--bg)',
+          borderRadius: '4px',
+          letterSpacing: '0.03em',
+          flex: 1,
+        }}>
+          sajtpress.rs
+        </span>
       </div>
-      <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent)', marginBottom: '2px', letterSpacing: '0.04em' }}>
-        {sub}
+      {/* Window body */}
+      <div style={{ padding: '14px 14px 16px' }}>
+        <div className="font-serif" style={{ fontSize: '15px', color: 'var(--text)', marginBottom: '4px', letterSpacing: '-0.01em' }}>
+          Premium <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>web</em>
+        </div>
+        <div style={{ height: 5, width: '78%', backgroundColor: 'var(--border)', borderRadius: 3, marginBottom: 4 }} />
+        <div style={{ height: 5, width: '54%', backgroundColor: 'var(--border)', borderRadius: 3, marginBottom: 12 }} />
+        <motion.div
+          animate={{ boxShadow: ['0 0 0 0 rgba(1,105,111,0.4)', '0 0 0 6px rgba(1,105,111,0)', '0 0 0 0 rgba(1,105,111,0)'] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '5px 10px',
+            backgroundColor: 'var(--accent)',
+            color: '#fff',
+            borderRadius: 6,
+            fontSize: 9,
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
+          View <ArrowRight size={9} strokeWidth={2.4} />
+        </motion.div>
       </div>
-      <div style={{ fontSize: '10px', color: 'var(--muted)', letterSpacing: '0.02em' }}>
-        {note}
+    </motion.div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Card 2 — Color palette
+// ─────────────────────────────────────────────────────────────────
+const SWATCHES = [
+  { color: '#F7F6F2', hex: '#F7F6F2', name: 'Cream' },
+  { color: '#01696F', hex: '#01696F', name: 'Teal' },
+  { color: '#1B1A18', hex: '#1B1A18', name: 'Ink' },
+  { color: '#C8965A', hex: '#C8965A', name: 'Amber' },
+  { color: '#8B3A1A', hex: '#8B3A1A', name: 'Brick' },
+]
+
+function PaletteCard() {
+  const { rotateX, rotateY, onMove, onLeave } = useTilt()
+  const [active, setActive] = useState<number | null>(null)
+
+  return (
+    <motion.div
+      onMouseMove={onMove}
+      onMouseLeave={() => { onLeave(); setActive(null) }}
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+      style={{ ...cardChrome, width: '200px', padding: '14px 14px 16px', rotateX, rotateY, cursor: 'pointer' }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
+        <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          Color System
+        </span>
+        <span style={{ fontSize: '9px', color: 'var(--muted)' }}>
+          {SWATCHES.length}
+        </span>
       </div>
-    </div>
+
+      <div style={{ display: 'flex', gap: '5px', marginBottom: '10px' }}>
+        {SWATCHES.map((s, i) => (
+          <motion.div
+            key={s.hex}
+            onMouseEnter={() => setActive(i)}
+            animate={{
+              scaleY: active === i ? 1.25 : 1,
+              y: active === i ? -3 : 0,
+            }}
+            transition={{ type: 'spring', damping: 18, stiffness: 320 }}
+            style={{
+              flex: 1,
+              height: '36px',
+              backgroundColor: s.color,
+              borderRadius: '4px',
+              border: '1px solid rgba(0,0,0,0.08)',
+              cursor: 'pointer',
+              transformOrigin: 'bottom',
+            }}
+          />
+        ))}
+      </div>
+
+      <div style={{ minHeight: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ fontSize: '11px', color: 'var(--text)', fontFamily: 'monospace', letterSpacing: '0.02em' }}>
+          {active !== null ? SWATCHES[active].hex : '#__ __ __'}
+        </div>
+        <div style={{ fontSize: '9px', color: 'var(--muted)', letterSpacing: '0.04em' }}>
+          {active !== null ? SWATCHES[active].name : 'hover a swatch'}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Card 3 — Typography
+// ─────────────────────────────────────────────────────────────────
+function TypographyCard() {
+  const { rotateX, rotateY, onMove, onLeave } = useTilt()
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <motion.div
+      onMouseMove={onMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { onLeave(); setHovered(false) }}
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+      style={{ ...cardChrome, width: '170px', padding: '14px 16px 16px', rotateX, rotateY, cursor: 'pointer' }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
+        <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          Typography
+        </span>
+        <span style={{ fontSize: '9px', color: 'var(--muted)' }}>60pt</span>
+      </div>
+
+      <motion.div
+        className="font-serif"
+        animate={{ fontStyle: hovered ? 'italic' : 'normal' }}
+        transition={{ duration: 0.3 }}
+        style={{
+          fontSize: '64px',
+          lineHeight: 0.9,
+          color: 'var(--text)',
+          letterSpacing: '-0.04em',
+          marginBottom: '6px',
+        }}
+      >
+        Aa
+      </motion.div>
+
+      <div style={{ fontSize: '10px', color: 'var(--text)', fontWeight: 500 }}>
+        Instrument Serif
+      </div>
+      <div style={{ fontSize: '9px', color: 'var(--muted)', letterSpacing: '0.02em' }}>
+        {hovered ? 'Italic · Display' : 'Regular · Display'}
+      </div>
+    </motion.div>
   )
 }
 
