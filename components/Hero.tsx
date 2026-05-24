@@ -6,7 +6,6 @@ import { ArrowRight, ArrowDown } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useT } from '@/lib/LanguageContext'
-import { spring } from '@/lib/motion'
 import CursorTrail from '@/components/CursorTrail'
 
 // Three interactive design-tool cards, positioned in the right half of the hero.

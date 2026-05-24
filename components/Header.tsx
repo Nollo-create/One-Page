@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, LayoutGroup, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { useTheme } from '@/lib/ThemeContext'
 import { useT } from '@/lib/LanguageContext'
 import LanguageToggle from '@/components/LanguageToggle'
@@ -60,13 +61,13 @@ export default function Header() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
 
             {/* Logo */}
-            <a
+            <Link
               href="/"
               className="font-serif"
               style={{ fontSize: '18px', letterSpacing: '0.08em', textDecoration: 'none', color: 'var(--text)' }}
             >
               SAJTPRESS
-            </a>
+            </Link>
 
             {/* Desktop nav */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

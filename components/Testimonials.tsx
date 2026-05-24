@@ -143,7 +143,7 @@ export default function Testimonials() {
                   userSelect: 'none',
                 }}
               >
-                "
+                &ldquo;
               </div>
 
               {/* Quote */}

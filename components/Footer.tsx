@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { useT } from '@/lib/LanguageContext'
 
@@ -43,13 +44,13 @@ export default function Footer() {
         >
           {/* Brand */}
           <div>
-            <a
+            <Link
               href="/"
               className="font-serif"
               style={{ fontSize: '19px', letterSpacing: '0.08em', textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: '14px' }}
             >
               SAJTPRESS
-            </a>
+            </Link>
             <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '240px' }}>
               {t.footer.tagline}
             </p>
